@@ -26,8 +26,6 @@ const MyChatList = () => {
                 let start = e.target.selectionStart;
                 let end = e.target.selectionEnd;
                 e.target.value = val.substring(0, start) + "\n" + val.substring(end);
-                /*  이거 안해도 되는거보면 별상관없는듯? 
-                      e.target.selectionStart = e.target.selectionEnd = start + 1; */
                 setMsg(e.target.value);
                 return false; //  prevent focus
             }
@@ -46,7 +44,7 @@ const MyChatList = () => {
     const getMessages = () => {
         const q = query(
             collection(db, 'messages'),
-            orderBy('date', 'desc'),
+            orderBy('date', 'asc'),
             limit(100)
         );
 
@@ -71,6 +69,12 @@ const MyChatList = () => {
         await deleteDoc(doc(db, 'messages', id));
     }
 
+/*     //나중에 roomID 부여하게 되면 roomID로 초기화하면 될듯.
+    const onClickDeleteAll = async (roomId) => {
+        if (!window.confirm(`삭제하실래요?`)) return;
+        await deleteDoc(doc(db, 'messages',roomId));
+    } */
+
     useEffect(() => {
         getMessages();
     }, []);
@@ -79,6 +83,7 @@ const MyChatList = () => {
 
     return (
         <div style={{ margin: '50px 0px' }}>
+    {/*         <Button onClick={()=>onClickDeleteAll()}>채팅창초기화</Button> */}
             <div className="wrap">
 
                 {messages.map(message =>

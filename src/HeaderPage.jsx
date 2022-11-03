@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { collection, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { Link, withRouter } from 'react-router-dom';
 import { UserContext } from './context/UserContext';
 import { app } from './fireStore';
@@ -63,16 +63,20 @@ const HeaderPage = ({ history, location }) => {
 
   return (
 
-    <Navbar className='fixed-top' bg='secondary' variant="dark">
+    <Navbar className='fixed-top' bg='secondary' variant="dark" collapseOnSelect expand="lg">
       <Container>
         <Navbar.Brand onClick={onClick} href="/">물론마켓</Navbar.Brand>
-        <Nav className="me-auto">
+        <Nav className="me-auto"
+        navbarScroll>
           <Nav.Link onClick={onClick} href="/about">회사소개</Nav.Link>
-          <Nav.Link onClick={onClick} href="/pboard/list">상품 목록</Nav.Link>
+          <NavDropdown title="상품" id="navbarScrollingDropdown">
+          <NavDropdown.Item onClick={onClick} href="/pboard/list">상품 목록</NavDropdown.Item>
           {sessionStorage.getItem('uid') &&
-            <Nav.Link onClick={onClick} href="/pboard/insert">상품 등록</Nav.Link>
+            <NavDropdown.Item onClick={onClick} href="/pboard/insert">상품 등록</NavDropdown.Item>
 
           }
+          </NavDropdown>
+         
         </Nav>
         <Nav>
           {sessionStorage.getItem('uid') ?

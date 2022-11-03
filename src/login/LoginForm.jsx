@@ -49,7 +49,7 @@ const LoginForm = ({ history }) => {
         }
       } else {
         sessionStorage.setItem("uid", form.uid);
-        history.push('/');
+        history.push('/login/restore')
       }
 
     }catch(e){

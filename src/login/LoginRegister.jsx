@@ -126,9 +126,11 @@ const LoginRegister = ({ history }) => {
       console.log(pair[0] + ',' + pair[1])
     }
 
+    
     try {
       await axios.post('/api/user/insert', formData);
       alert('등록성공')
+      history.push('/login/form')
     } catch (e) {
       if (e.message === 'Request failed with status code 500') {
         alert('이미지 파일의 확장자는 jpg, png만 가능합니다.')
@@ -136,7 +138,7 @@ const LoginRegister = ({ history }) => {
     }
 
 
-    /*     history.push('/login'); */
+    
   }
 
 

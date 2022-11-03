@@ -2,9 +2,10 @@ import { Card, Grid, TextField } from '@material-ui/core';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Form, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-const PboardRead = ({ history, match }) => {
+const PboardRead = ({ match }) => {
   const pcode = match.params.pcode;
   const { loginUser } = useContext(UserContext);
   const [image, setImage] = useState('');
@@ -47,6 +48,7 @@ const PboardRead = ({ history, match }) => {
     e.preventDefault();
     if (!window.confirm('정말로 수정하시겠습니까?')) return;
     const formData = new FormData();
+    console.log(loginUser);
     formData.append("file", file);
     formData.append("pcode", pcode);
     formData.append("pcontent", pcontent);
@@ -59,8 +61,10 @@ const PboardRead = ({ history, match }) => {
       await axios.post('/api/pboard/update', formData);
       alert('수정완료')
     } catch (e) {
+      console.log(e);
       if (e.message === 'Network Error') {
         alert('파일의 용량이 너무 커서 업로드할 수 없습니다.')
+       
       } else {
         alert('예상치 못한 오류가 발생하였습니다')
       }
@@ -84,6 +88,7 @@ const PboardRead = ({ history, match }) => {
             <Form.Control className='my-3'
               type="file"
               onChange={onChangeFile} />
+              
             <hr />
 
             <Grid item xs={12}>
@@ -91,8 +96,20 @@ const PboardRead = ({ history, match }) => {
                 variant="outlined"
                 required
                 fullWidth
+                value={pwriter}
+                readOnly
+                label="작성자"
+                name="pwriter"
+                autoComplete="pwriter"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
                 value={ptitle}
-                onChange={onChangeForm}
+                onChange={loginUser.unickname === pwriter && onChangeForm}
                 label="제목"
                 name="ptitle"
                 autoComplete="ptitle"
@@ -106,7 +123,7 @@ const PboardRead = ({ history, match }) => {
                 required
                 fullWidth
                 value={pcontent}
-                onChange={onChangeForm}
+                onChange={loginUser.unickname === pwriter && onChangeForm}
                 label="내용은 300자 제한"
                 name="pcontent"
                 autoComplete="pcontent"
@@ -122,7 +139,7 @@ const PboardRead = ({ history, match }) => {
                   fullWidth
                   placeholder='가격을 입력하세요'
                   value={pprice}
-                  onChange={onChangeForm}
+                  onChange={loginUser.unickname === pwriter && onChangeForm}
                   name="pprice"
                   type='number'
                   autoComplete="pprice"
@@ -133,9 +150,11 @@ const PboardRead = ({ history, match }) => {
             <div style={{ marginTop: 30 }}>
               {loginUser.unickname === pwriter &&
                 <ButtonGroup>
-                  <Button onClick={onSubmit_update} style={{marginRight:120}}>상품 수정</Button>
+                  <Button onClick={onSubmit_update} style={{ marginRight: 120 }}>상품 수정</Button>
                   <Button onClick={onSubmit_update} >상품 삭제</Button>
                 </ButtonGroup>}
+              {(loginUser.unickname !== pwriter && sessionStorage.getItem('uid')) &&
+                <Link to={`/my/chat`}><Button >채팅하기</Button></Link>}
             </div>
           </Form>
         </Card>
