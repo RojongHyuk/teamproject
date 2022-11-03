@@ -4,7 +4,7 @@ import qs from 'qs'
 import Pagination from 'react-js-pagination';
 import PboardItem from './PboardItem';
 import './Pagination.css'
-import { Form, Row, Spinner } from 'react-bootstrap';
+import { CardGroup, Form, Row, Spinner } from 'react-bootstrap';
 import { Box, CircularProgress } from '@material-ui/core';
 
 const PboardList = ({ location, history }) => {
@@ -12,9 +12,9 @@ const PboardList = ({ location, history }) => {
     const [postList, setPostList] = useState([]);
     const [total, setTotal] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [query, setQuery] = useState('');
     const page = parseInt(search.page) || 1;
     const num = 6;
+    const [query, setQuery] = useState('');
     const [searchType, setSearchType] = useState('제목');
 
 
@@ -26,8 +26,8 @@ const PboardList = ({ location, history }) => {
         setLoading(false);
     }
 
-    const onkeyDown=(e)=>{
-        if(e.keyCode===13){
+    const onkeyDown = (e) => {
+        if (e.keyCode === 13) {
             callPostList();
         }
     }
@@ -48,10 +48,10 @@ const PboardList = ({ location, history }) => {
     return (
         <>
             <select value={searchType}
-                style={{ marginTop: 300 }}
+                style={{ marginTop: 100, marginLeft: 1130 }}
                 name="searchType"
                 onChange={(e) => setSearchType(e.target.value)}
-               >
+            >
                 <option>분류를 선택하세요</option>
                 <option>제목</option>
                 <option>내용</option>
@@ -59,13 +59,14 @@ const PboardList = ({ location, history }) => {
                 <option>작성자</option>
             </select>
             <input value={query}
+                style={{ marginLeft: 30 }}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onkeyDown}>
             </input>
-            <Row>
 
+            <Row>
                 {postList.map(postList =>
-                    <PboardItem key={postList.pcode} postList={postList} />
+                    <PboardItem key={postList.pcode} callPostList={callPostList} postList={postList} />
                 )}
             </Row>
             <br />

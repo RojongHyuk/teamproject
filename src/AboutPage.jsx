@@ -18,6 +18,7 @@ const AboutPage = () => {
       <Carousel>
         <Carousel.Item>
           <img
+          style={{marginTop:80}}
             sizes='100vw'
             className="d-block w-100"
             src="/image/a1.png"

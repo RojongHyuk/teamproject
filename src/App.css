@@ -14,22 +14,26 @@
   scroll-behavior: smooth;
 }
 
-/* .navbar a {
-   transition: opacity .2s; 
-  display: block;
-  clear: both;
-   position: absolute; 
-  left: 7px;
-   top: 100px;
-   opacity: 0 
+/* div .sql{
+  transform: translate(-100%, 0);
+  transform: translate(0, 0);
 } */
 
-.navbar--scrolled{
-  transform:translateZ(0);
-  background-color:#000
+
+.slick-slide > div img{
+  margin:0px auto;
+  }
+
+.slick-slide > div .item {
+  position: relative;
 }
-.navbar--scrolled:before{
-  opacity:0
+
+.slick-slide > div .item .title{
+  position: absolute;
+  left:15%;
+  top: 6%;
+  color: red;
+  font-size: 1.5rem;
 }
 
 

@@ -62,7 +62,7 @@ const HeaderPage = ({ history, location }) => {
   }, [location]); */
 
   return (
-
+<div className='sql'>
     <Navbar className='fixed-top' bg='secondary' variant="dark" collapseOnSelect expand="lg">
       <Container>
         <Navbar.Brand onClick={onClick} href="/">물론마켓</Navbar.Brand>
@@ -103,7 +103,7 @@ const HeaderPage = ({ history, location }) => {
         </Nav>
       </Container>
     </Navbar>
-
+    </div>
   )
 }
 
