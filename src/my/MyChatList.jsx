@@ -1,23 +1,106 @@
-import { addDoc, collection, deleteDoc, doc, getFirestore, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
-import moment from 'moment/moment';
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Row, Table } from 'react-bootstrap';
+import axios from 'axios';
+import { addDoc, collection, deleteDoc, doc, getFirestore, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import qs from 'qs';
+import { default as React, useContext, useEffect, useState } from 'react';
+import { Button, Form, Row } from 'react-bootstrap';
+import { UserContext } from '../context/UserContext';
 import { app } from '../fireStore';
 import MyChatItem from './MyChatItem';
-import './chat.css'
-import { useContext } from 'react';
-import { UserContext } from '../context/UserContext';
+import './MyChatList.css';
+import './MyChatList.scss';
+import Swal from 'sweetalert2';
 
-const MyChatList = () => {
-    const { loginUser } = useContext(UserContext);
+const MyChatList = ({ location, history }) => {
     const db = getFirestore(app);
-    const [msg, setMsg] = useState('');
-    const [messages, setMessages] = useState(null);
+    const search = qs.parse(location.search, { ignoreQueryPrefix: true });
+    const [pcode, setPcode] = useState(search.pcode || 'ab');
+    const [Message, setMessage] = useState('');
+    const [messageList, setMessageList] = useState([]);
+    const [chatId, setChatId] = useState('unde');
+    const [pboardInfo, setPboardInfo] = useState({});
+    const { loginUser } = useContext(UserContext);
+
+    const getRoomList = () => {
+        const q = query(
+            collection(db, `chatroom`),
+            where('who', 'array-contains', sessionStorage.getItem('uid')),
+            limit(100)
+        );
+
+        //chatroom fetch
+        onSnapshot(q, (snapshot) => {
+
+            snapshot.forEach((doc) => {
+                const li = document.createElement('li');
+
+                li.className = 'list-group-item non-click';
+
+                li.innerHTML = `
+                <h6>
+                ${sessionStorage.getItem('uid') === doc.data().who[0] ?
+                        '판매자ㅡ'
+                        :
+                        '구매자ㅡ'}
+                        ${sessionStorage.getItem('uid') === doc.data().who[0] ?
+                        doc.data().who[1]
+                        :
+                        doc.data().who[0]}</h6>
+                        <div class='text-small'>${doc.id}</div>
+                        <p class='text-small1'>${doc.data().pcode}</p>
+                        <img src=${JSON.stringify(doc.data().pimage)} width=70 height=70/>
+                `;
+
+
+
+                //same chatId onclick ㅡ> duplicate x
+                if ((chatId.includes('unde')===true)) {
+                    document.getElementsByClassName('list-group chat-list')[0].append(li);
+                }
+            });
+
+
+            for (let i = 0; i < document.getElementsByClassName('list-group-item non-click').length; ++i) {
+                document.getElementsByClassName('list-group-item non-click')[i].addEventListener("click", function (e) {
+                    setChatId(document.getElementsByClassName("text-small")[i].innerHTML)
+                    setPcode(document.getElementsByClassName("text-small1")[i].innerHTML)
+                })
+            }
+
+            callPboardInfo();
+
+        });
+
+    }
+
+    const callPboardInfo = async () => {
+        const result = await axios.get(`/api/pboard/onlyread/${pcode}`)
+        setPboardInfo(result.data);
+    }
+
+    const nonClick = document.querySelectorAll(".non-click");
+
+    const onClick = (e) => {
+
+        if (e.target.tagName === 'LI' || e.target.tagName === "H6" || e.target.tagName === "IMG") {
+            // dom 요소에서 모든 "click" 클래스 제거
+            nonClick.forEach((e) => {
+                e.classList.remove("click");
+            });
+            // 클릭한 dom의 최상위요소만 "click"클래스 추가. currentTarget(functino으로는 this)이라서 그럼
+            e.currentTarget.classList.add("click");
+        }
+    }
+
+    nonClick.forEach((e) => {
+        e.addEventListener("click", onClick);
+    });
+
+
 
     //Doc element를 최초 생성
     const sendMessage = async (e) => {
         if (e.keyCode === 13) {
-            if (msg === '') {
+            if (Message === '') {
                 alert('보낼 내용을 입력하세요')
                 return;
             }
@@ -26,24 +109,26 @@ const MyChatList = () => {
                 let start = e.target.selectionStart;
                 let end = e.target.selectionEnd;
                 e.target.value = val.substring(0, start) + "\n" + val.substring(end);
-                setMsg(e.target.value);
-                return false; //  prevent focus
+                setMessage(e.target.value);
+                return false; //  pre focus
             }
-            await addDoc(collection(db, 'messages'), {
-                uid: loginUser.uid,
-                text: msg,
-                date: moment(new Date()).format('a H:m'),
-                uprofile: loginUser.uprofile,
-                unickname: loginUser.unickname
+
+            const docRef = doc(db, 'chatroom', `${chatId}`);
+            const colRef = collection(docRef, 'messagelist')
+            await addDoc(colRef, {
+                text: Message,
+                date: new Date().getTime(),
+                uid: sessionStorage.getItem('uid'),
+                unickname: loginUser.unickname,
+                uprofile: loginUser.uprofile
             });
-            setMsg('');
+            setMessage('');
         }
     }
 
-    //만든 Doc element를 fetch. 새로 배열 하나 만들어서 뿌려야함.
-    const getMessages = () => {
+    const getMessageList = () => {
         const q = query(
-            collection(db, 'messages'),
+            collection(db, `chatroom/${chatId}/messagelist`),
             orderBy('date', 'asc'),
             limit(100)
         );
@@ -56,58 +141,98 @@ const MyChatList = () => {
                     uid: doc.data().uid,
                     text: doc.data().text,
                     date: doc.data().date,
-                    uprofile: doc.data().uprofile,
-                    unickname: doc.data().unickname
+                    unickname: doc.data().unickname,
+                    uprofile: doc.data().uprofile
                 });
             });
-            setMessages(rows);
+            setMessageList(rows);
         });
     }
 
-    const onClickDelete = async (id) => {
-        if (!window.confirm(`${id}번 알림을 삭제하실래요?`)) return;
-        await deleteDoc(doc(db, 'messages', id));
+    const onDeleteMessage = async (id) => {
+        Swal.fire({
+            text: "메시지를 삭제하시겠습니까?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await deleteDoc(doc(db, `chatroom/${chatId}/messagelist`, id));
+            }
+        })
     }
 
-/*     //나중에 roomID 부여하게 되면 roomID로 초기화하면 될듯.
-    const onClickDeleteAll = async (roomId) => {
-        if (!window.confirm(`삭제하실래요?`)) return;
-        await deleteDoc(doc(db, 'messages',roomId));
-    } */
+    const onDeleteChatroom = (id) => {
+        Swal.fire({
+            text: "채팅방을 나가시겠습니까?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setTimeout(()=>deleteDoc(doc(db, `chatroom`, id)),1000);
+                document.getElementsByClassName('list-group-item non-click click')[0].remove();
+                history.push('/pboard/list')
+            }
+        })
+    }
 
     useEffect(() => {
-        getMessages();
-    }, []);
+        getRoomList();
+        getMessageList();
+    }, [chatId]);
 
-    if (!messages) return <h1>Loading......</h1>
 
     return (
-        <div style={{ margin: '50px 0px' }}>
-    {/*         <Button onClick={()=>onClickDeleteAll()}>채팅창초기화</Button> */}
-            <div className="wrap">
+        <li className="container" style={{ marginTop: 100 }}>
+            <li className="row" style={{ margin: '150px 0px' }}>
 
-                {messages.map(message =>
-                    <div className={message.uid === loginUser.uid ? 'chat ch2' : 'chat ch1'}>
-                        <MyChatItem key={message.id}
-                            message={message}
-                            onClickDelete={onClickDelete} />
-                    </div>
-                )}
+                <li className="col-3 p-0">
 
-            </div>
+                    <ul className="list-group chat-list">
+                    </ul>
 
-            <Row className="mt-5 justify-content-center">
-                <Form className="d-flex my-3" style={{ width: '52rem' }}>
-                    <Form.Control
-                        as="textarea"
-                        value={msg}
-                        onChange={(e) => setMsg(e.target.value)}
-                        onKeyDown={sendMessage}
-                        placeholder='enter를 누르세요' className="mx-2" />
-                </Form>
-            </Row>
-        </div>
+                </li>
+                <li className="col-9 p-0">
 
+                    {chatId.length > 5 && <li className="chat-room">
+                        <div className="wrap">
+                            {messageList.map(message =>
+                                <div className={message.uid === sessionStorage.uid ? 'chat ch2' : 'chat ch1'}>
+                                    <MyChatItem key={message.id}
+                                        message={message}
+                                        onDeleteMessage={onDeleteMessage} />
+                                </div>
+                            )}
+
+                        </div>
+                        <Row className="mt-5 justify-content-center">
+                            <Form className="d-flex my-3" style={{ width: '52rem' }}>
+                                <Form.Control
+                                    as="textarea"
+                                    value={Message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    onKeyDown={sendMessage}
+                                    placeholder='enter를 누르세요' className="mx-2" />
+                                <img src="../image/attach.png" />
+                            </Form>
+                            <div>
+                                {((sessionStorage.getItem('uid') !== pboardInfo.uid) && (pboardInfo.pcondition === 0)) &&
+                                    <Button Button onClick={() => history.push(`/my/pay/${pcode}`)}>결제창 이동</Button>}
+                                <Button style={{ marginLeft: 80 }} onClick={() => history.go(-1)}>뒤로가기</Button>
+                                <Button style={{ marginLeft: 80 }} onClick={() => onDeleteChatroom(chatId)}>채팅방 나가기</Button>
+                            </div>
+                        </Row>
+                    </li>}
+                </li>
+            </li>
+        </li >
     )
 }
 

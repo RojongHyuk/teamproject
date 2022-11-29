@@ -1,7 +1,7 @@
 .slick-arrow.slick-next,
 .slick-arrow.slick-prev
 {
-    background-color: rgb(219, 35, 26);
+    background-color: rgb(201, 10, 0);
     width: 70px;
     height: 70px;
     display: flex;
@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 60%;
-    opacity: 50%;
+    opacity: 60%;
 }
 .slick-slide sc-dkrFOg ceRrdL slick-arrow slick-prev{
     cursor: pointer;
@@ -21,9 +21,19 @@ display:none;
 }
 
 .slick-prev{
-    left:50px;
+    left:-10px;
+    top:170px;
 }
 
 .slick-next{
-    right: 50px;
+    right: -10px;
+    top:150px;
+}
+
+.slick-list{
+ width:auto;
+}
+
+.slick-slide{
+    width: fit-content;
 }

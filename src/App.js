@@ -1,18 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
-import { Route } from 'react-router-dom';
-import HomePage from './HomePage';
-import PboardPage from './pboard/PboardPage';
-import HeaderPage from './HeaderPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import LoginPage from './login/LoginPage';
 import { useState } from 'react';
-import { UserContext } from './context/UserContext';
+import { Route } from 'react-router-dom';
 import AboutPage from './AboutPage';
-import LoginRegister from './login/LoginRegister';
+import './App.css';
+import { UserContext } from './context/UserContext';
+import EventPage from './event/EventPage';
+import FooterPage from './FooterPage';
+import HeaderPage from './HeaderPage';
+import HomePage from './HomePage';
+import LoginPage from './login/LoginPage';
 import MyPage from './my/MyPage';
-import PboardList from './pboard/PboardList';
-import PboardRead from './pboard/PboardRead';
+import NoticePage from './notice/NoticePage';
+import PboardPage from './pboard/PboardPage';
 
 
 function App() {
@@ -27,6 +26,9 @@ function App() {
       <Route path="/login" component={LoginPage}/>
       <Route path="/about" component={AboutPage}/>
       <Route path="/my" component={MyPage}/>
+      <Route path="/event" component={EventPage}/>
+      <Route path="/notice" component={NoticePage}/>
+      <FooterPage/>
     </div>
     </UserContext.Provider>
   );

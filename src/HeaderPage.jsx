@@ -1,17 +1,13 @@
 import axios from 'axios';
-import { collection, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { UserContext } from './context/UserContext';
-import { app } from './fireStore';
 
-const HeaderPage = ({ history, location }) => {
+const HeaderPage = ({ history }) => {
   const { loginUser, setLoginUser } = useContext(UserContext);
 
-  const [count, setCount] = useState(0);
 
-  const db = getFirestore(app);
 
   const onClick = (e) => {
     e.preventDefault();
@@ -19,90 +15,70 @@ const HeaderPage = ({ history, location }) => {
     history.push(href);
   }
 
-  const onClickLogout = (e) => {
+  const onClickLogout = async (e) => {
     e.preventDefault();
     sessionStorage.removeItem('uid');
     history.push('/')
   }
 
-  //notice_read_date 대신 readData를 만들어주자. 하는 방식은 옛날 DB했던 방식을 참조.
+
   const callUserRead = async () => {
 
-    //로그인한 사용자 정보를 읽는다. 
+    //fetch loginUser info
     const result = await axios.get(`/api/user/read/${sessionStorage.getItem('uid')}`);
-    setLoginUser(result.data); 
-    
-    //읽지 않은 메시지 수를 구한다.
-    const readDate = result.data.notice_read_date || '';
-    console.log('readDate:', readDate); 
-    const q = query(collection(db, 'messages'), where('date', '>', readDate));
-
-    onSnapshot(q, (snapshot) => {
-      setCount(snapshot.docs.length);
-    }) 
+    setLoginUser(result.data);
   };
 
 
   useEffect(() => {
-    //로그인한 사용자가 바뀔 경우 사용자 정보를 다시 읽는다. 
+
+    //refetch loginUser info when it changes 
     if (sessionStorage.getItem('uid') !== null) callUserRead();
   }, [sessionStorage.getItem('uid')]);
 
 
-/*   useEffect(() => {
-    //알림페이지에서 떠나기 전에 read date를 수정한다. 
-    return async () => {
-
-      //notice는 어떤 용도이고 어떻게 만들어야 할까?
-      if (location.pathname === '/notice') {
-        await axios.post(`/api/user/update/notice_read_date/${sessionStorage.getItem('uid')}`);
-        callUserRead();
-      }
-    }
-  }, [location]); */
-
   return (
-<div className='sql'>
-    <Navbar className='fixed-top' bg='secondary' variant="dark" collapseOnSelect expand="lg">
-      <Container>
-        <Navbar.Brand onClick={onClick} href="/">물론마켓</Navbar.Brand>
-        <Nav className="me-auto"
-        navbarScroll>
-          <Nav.Link onClick={onClick} href="/about">회사소개</Nav.Link>
-          <NavDropdown title="상품" id="navbarScrollingDropdown">
-          <NavDropdown.Item onClick={onClick} href="/pboard/list">상품 목록</NavDropdown.Item>
-          {sessionStorage.getItem('uid') &&
-            <NavDropdown.Item onClick={onClick} href="/pboard/insert">상품 등록</NavDropdown.Item>
+    <div className='fixed'>
+      <Navbar className='fixed-top' bg='secondary' variant="dark" collapseOnSelect expand="lg">
+        <Container>
+          <Navbar.Brand className='box13' onClick={onClick} href="/">물론마켓</Navbar.Brand>
+          <Nav className="me-auto"
+            navbarScroll>
+            <Nav.Link className='box13' onClick={onClick} href="/about">회사소개</Nav.Link>
+            <NavDropdown title="상품" id="navbarScrollingDropdown">
+              <NavDropdown.Item onClick={onClick} href="/pboard/list">상품 목록</NavDropdown.Item>
+              {sessionStorage.getItem('uid') &&
+                <NavDropdown.Item onClick={onClick} href={`/pboard/insert/${loginUser.unickname}`}>상품 등록</NavDropdown.Item>
 
-          }
-          </NavDropdown>
-         
-        </Nav>
-        <Nav>
-          {sessionStorage.getItem('uid') ?
-            <>
-              <Nav.Link onClick={onClick} href="/notice">
-                알림 {(location.pathname !== '/notice' && count > 0) && <b>{count}</b>}
-              </Nav.Link>
+              }
+            </NavDropdown>
 
-              <Nav.Link onClick={onClick} href="/my/chat">
-               채팅
-              </Nav.Link>
+            <Nav.Link className='box13' href={`/notice/list`} onClick={onClick}>
+              공지사항
+            </Nav.Link>
+            <Nav.Link className='box13' href={`/event/list`} onClick={onClick}>
+              이벤트
+            </Nav.Link>
+          </Nav>
+          <Nav>
 
-              <Nav.Link href={`/my/info/${sessionStorage.getItem('uid')}`} onClick={onClick}>
-                {loginUser.unickname}
-              </Nav.Link>
+            {sessionStorage.getItem('uid') ?
+              <>
+                <Nav.Link href={`/my/menu`} onClick={onClick}>
+                  {loginUser.unickname}
+                </Nav.Link>
 
-              <Nav.Link onClick={onClickLogout}>
-                로그아웃
-              </Nav.Link>
-            </> :
-            <Nav.Link onClick={onClick} href='/login/form'>로그인</Nav.Link>
-          }
+                <Nav.Link onClick={onClickLogout}>
+                  로그아웃
+                </Nav.Link>
+              </> :
+              <Nav.Link onClick={onClick} href='/login/form'>로그인</Nav.Link>
+            }
 
-        </Nav>
-      </Container>
-    </Navbar>
+          </Nav>
+        </Container>
+      </Navbar>
+
     </div>
   )
 }

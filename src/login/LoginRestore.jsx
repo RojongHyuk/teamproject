@@ -1,49 +1,65 @@
-
-import { Grid, TextField } from '@material-ui/core';
-import { Button, Card, Col, Container, Form, Nav, Navbar, Row } from 'react-bootstrap';
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react'
-
-import { UserContext } from '../context/UserContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { SignalCellularNoSimOutlined } from '@material-ui/icons';
+import React from 'react';
+import { Button } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 
-const LoginRestore = ({history}) => {
-  const { loginUser, setLoginUser } = useContext(UserContext);
-  
+const LoginRestore = ({ history, match }) => {
+  const uid = match.params.uid;
 
-  const restoreSubmit = async () => {
-    if (!window.confirm('회원을 복구 하시겠습니까?')) return;
-    const formData = new FormData();
-    formData.append("uid", loginUser.uid);
-    await axios.post('/api/user/restore', formData);
-    alert("회원복구 완료!");
-    sessionStorage.removeItem('uid');
-    history.push('/');
+  //restore id
+  const OnRestore = () => {
+    Swal.fire({
+      text: "아이디를 복원하시겠습니까?",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '복원',
+      cancelButtonText: '취소'
+    }).then(async (result) => {
+
+      if (result.isConfirmed) {
+        const formData = new FormData();
+        formData.append("uid", uid);
+
+        try {
+          await axios.post('/api/user/restore', formData);
+          Swal.fire({
+            text: "아이디 복원을 완료하였습니다!",
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+          })
+          history.push('/login/form');
+        } catch (e) {
+          if (e) {
+            Swal.fire({
+              text: "예상치 못한 오류가 발생하였습니다",
+              icon: 'error',
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+            })
+          }
+        }
+
+      }
+    })
   }
 
 
-  if (!loginUser) return <h1>Loading......</h1>
+
+
 
 
 
   return (
-   
-    <Navbar className='fixed-top' bg='secondary' variant="dark">
-      <Container>
-   
-        <Nav>
-          {sessionStorage.getItem('uid')}
-            
-             5573
-            
-          <Button onClick={restoreSubmit}>계정복구</Button>
-           
-          
-        </Nav>
-
-      </Container>
-    </Navbar>
+    <div>
+      <img src='/image/fn.jpg' width={930} height={410} style={{marginTop:20}} />
+      <div style={{ marginTop: 50 }}>
+              <Button onClick={OnRestore}>계정복구</Button>
+      </div>
+    </div>
   )
 }
 
