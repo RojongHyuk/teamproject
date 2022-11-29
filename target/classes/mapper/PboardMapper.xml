@@ -109,7 +109,7 @@
 	<select id="best" resultType="com.example.domain.PboardVO">
 		select * from tbl_pboard
 		order by plike desc 
-		limit 0,6;
+		limit 0,16;
 	</select>
 
 	<update id="updateLove">

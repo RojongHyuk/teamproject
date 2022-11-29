@@ -1,4 +1,5 @@
-    <%@ page language="java" contentType="text/html; charset=UTF-8"
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -14,24 +15,95 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 </head>
 <style>
-#list{
-margin-top:30px;
+body {
+	background: #eee;
+}
+
+#list {
+	margin-top: 15px;
+	margin-left: 500px;
+	overflow: hidden;
+	width:700px;
+}
+
+#left {
+	float: left;
+}
+
+#right {
+	float: right;
+}
+
+#right button{
+margin-right:70px;
+}
+
+
+table {
+	border-collapse: collapse;
+	margin: 0px auto;
+	margin-top: 30px;
+}
+
+td {
+	padding: 10px 10px;
+}
+
+table .title {
+	color: white;
+}
+
+table .row:hover {
+	color: green;
+	cursor: pointer;
+}
+
+button {
+	margin-left: 15px;
+	margin-top: 70px;
+	margin-bottom: 30px;
+	padding: 10px 10px;
+	background: green;
+	color: white;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+button:disabled {
+	background: gray;
+}
+
+a{
+    text-decoration:none;
+	cursor: pointer;
+	color:black;
+	margin-left:60px;
+
+}
+
+a:hover{
+    text-decoration:none;
+	cursor: pointer;
+	color:red;
 }
 </style>
 <body>
 
 	<h1>상품 목록</h1>
-	<button type='button' id='btnDelete'>삭제</button>
 	<div id="list">
-	<a href="/event/list?page=1&num=6&searchType=&keyword=">
-		<button type='button'>이벤트 목록</button>
-	</a>
-	<a href="/notice/list?page=1&num=6&searchType=&keyword=">
-		<button type='button'>공지사항 목록</button>
-	</a>
-		<a href="/">
-		<button type='button'>홈페이지</button>
-	</a>
+		<div id="right">
+			<button type='button' id='btnDelete'>삭제</button>
+		</div>
+		<div id="left">
+			<a href="/event/list?page=1&num=6&searchType=&keyword=">
+			이벤트 목록
+			</a> <a href="/notice/list?page=1&num=6&searchType=&keyword=">
+			공지사항 목록
+			</a> <a href="/">
+			홈페이지
+			</a>
+		</div>
 	</div>
 
 	<table id="tbl" border=1>
@@ -41,25 +113,23 @@ margin-top:30px;
 				<th width=300>제목</th>
 				<th width=300>내용</th>
 				<th width=100>작성자</th>
-				<th width=100>작성일자</th>
 			</tr>
 		</thead>
 
 		<tbody>
 			<c:forEach items="${list}" var="vo">
-				<tr class=row>
-					<td><input type="checkbox" name="chk" class="chk"
+				<tr onclick="location.href='/pboard/read/${vo.pcode}'" class=row>
+					<td onclick="event.cancelBubble=true" ><input type="checkbox" name="chk" class="chk"
 						pcode="${vo.pcode}" width=50 /></td>
-					<td><a href="/pboard/read/${vo.pcode}">${vo.ptitle}</a></td>
+					<td>${vo.ptitle}</td>
 					<td>${vo.pcontent}</td>
 					<td>${vo.pwriter}</td>
-					<td>${vo.regDate}</td>
 				</tr>
 
 			</c:forEach>
 		</tbody>
 	</table>
-	<div>
+	<div id="list">
 		<form name="frm">
 			<button id="prev" <c:out value="${page==1?'disabled':''}"/>>이전</button>
 			<input type="text" value="${page}" size=2 name="page"> <span>${page}/${last}</span>
@@ -142,7 +212,7 @@ margin-top:30px;
 			if (!confirm(pcode + "를 삭제하시겠습니까?")) {
 				return;
 			}
-			
+
 			$.ajax({
 				type : "post",
 				url : "/api/pboard/delete?pcode=" + pcode,
@@ -157,4 +227,4 @@ margin-top:30px;
 	})
 </script>
 </html>
-    
+

@@ -14,8 +14,75 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 </head>
 <style>
-#list{
-margin-top:30px;
+body {
+	background: #eee;
+}
+
+#list {
+	margin-top: 15px;
+	margin-left: 500px;
+	overflow: hidden;
+	width:700px;
+}
+
+#left {
+	float: left;
+}
+
+#right {
+	float: right;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 0px auto;
+	margin-top: 30px;
+}
+
+td {
+	padding: 10px 10px;
+}
+
+table .title {
+	color: white;
+}
+
+table .row:hover {
+	color: green;
+	cursor: pointer;
+}
+
+button {
+	margin-left: 15px;
+	margin-top: 70px;
+	margin-bottom: 30px;
+	padding: 10px 10px;
+	background: green;
+	color: white;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+button:disabled {
+	background: gray;
+}
+
+a{
+    text-decoration:none;
+	cursor: pointer;
+	color:black;
+	margin-left:60px;
+
+}
+
+a:hover{
+    text-decoration:none;
+	cursor: pointer;
+	color:red;
+}
+#right #btnDelete{
+margin-right:20px;
 }
 </style>
 <body>
@@ -23,22 +90,24 @@ margin-top:30px;
 
 
 	<h1>공지사항</h1>
-	<button type="button" class="selectDelete_btn" id="btnDelete" >삭제</button>
-	<button type="button" class="insert_btn" id="insert"
-		onClick="location.href='/notice/insert'" >등록</button>&nbsp;&nbsp;
-		
-		<div id="list">
-		<a href="/pboard/list?page=1&num=6&searchType=&keyword=">
-			<button type='button'>상품목록</button>
-		</a> 
-		<a href="/event/list?page=1&num=6&searchType=&keyword=">
-			<button type='button'>이벤트 목록</button>
-		</a> 
-		<a href="/">
-			<button type='button'>홈페이지</button>
-		</a>
+
+	<div id="list">
+		<div id="right">
+			<button type="button" class="insert_btn" id="insert"
+				onClick="location.href='/notice/insert'">등록</button>
+			<button style='margin-left:60px' type="button" id="btnDelete">삭제</button>
+		</div>
+		<div id="left">
+			&nbsp;&nbsp; <a href="/">
+			홈페이지
+			</a> <a href="/pboard/list?page=1&num=6&searchType=&keyword=">
+			상품 목록
+			</a> <a href="/event/list?page=1&num=6&searchType=&keyword=">
+			이벤트 목록
+			</a>
+		</div>
 	</div>
-	
+
 	<table id="tbl" border=1>
 		<thead>
 			<tr>
@@ -51,10 +120,10 @@ margin-top:30px;
 		</thead>
 		<tbody>
 			<c:forEach items="${list}" var="vo">
-				<tr class="row">
-					<td><input type="checkbox" name="chk" class="chk"
+				<tr onclick="location.href='/notice/read/${vo.ncode}'" class=row>
+					<td  onclick="event.cancelBubble=true" ><input type="checkbox" name="chk" class="chk"
 						ncode="${vo.ncode}" width=50 /></td>
-					<td><a href="/notice/read/${vo.ncode}">${vo.ntitle}</a></td>
+					<td>${vo.ntitle}</td>
 					<td>${vo.ncontent}</td>
 					<td>${vo.nwriter}</td>
 					<td>${vo.regDate}</td>
@@ -62,13 +131,13 @@ margin-top:30px;
 			</c:forEach>
 		</tbody>
 	</table>
-	<div>
+	<div id="list">
 		<form name="frm">
 			<button id="prev" <c:out value="${page==1?'disabled':''}"/>>이전</button>
 			<input type="text" value="${page}" size=2 name="page"> <span>${page}/${last}</span>
 			<button id="next" <c:out value="${page==last?'disabled':''}"/>>다음</button>
-			<input type="hidden" name=num value="${num}"/>
-			<select name="searchType">
+			<input type="hidden" name=num value="${num}" /> <select
+				name="searchType">
 				<option value='제목'>제목</option>
 				<option value='내용'>내용</option>
 				<option value='제목과 내용'>제목과 내용</option>

@@ -45,7 +45,7 @@
 		temp_month aa
 			left join 
             	tbl_pay p 
-                on (month(p.regDate) = month(aa.tmonth) and p.seller=#{seller})
+                on (month(p.regDate) = month(aa.tmonth) and p.buyer=#{buyer})
     		group by 
             	tmonth;
 	</select>

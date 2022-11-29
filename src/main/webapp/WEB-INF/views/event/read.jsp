@@ -10,31 +10,59 @@
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 </head>
+<style>
+body {
+	background: #eee;
+}
 
+table {
+	margin-top: 15px;
+	margin-left: 420px;
+	width:600px;
+}
+
+#list {
+	margin-top: 15px;
+	margin-left: 500px;
+	width:800px;
+}
+
+
+
+.buttons{
+    margin-top: 15px;
+	margin-left: 700px;
+	width:800px;
+}
+#replylist{
+text-align: center;
+margin-top:50px;
+}
+
+#button1{
+margin-top:30px;
+}
+</style>
 <body>
-	<h2 style="text-align: center">수정 페이지</h2>
+	<h2 style="text-align: center">이벤트</h2>
 	<form style="text-align: center" name="update" method="POST"
 		action="/api/event/update">
 		<div>
-			<input name="etitle" value="${vo.etitle}" id="etitle" size=80
+			제목 ㅡ <input name="etitle" value="${vo.etitle}" id="etitle" size=80
 				placeholder="제목을 입력해주세요.">
 		</div>
 		<div style="margin-top: 15px">
-			<input style="height: 300px" size=80 value="${vo.econtent}"
-				name="econtent" id="econtent" placeholder="내용을 입력해주세요.">
+			<textarea  cols=100 rows=10 name="econtent" id="econtent"
+				placeholder="내용을 입력해주세요.">"${vo.econtent}"</textarea>
 		</div>
 		<input name="ecode" value="${vo.ecode}" type="hidden" />
-		<div>
+		<div id="button1">
 			<button type="button" id="btnSave">수정</button>
-			<button type="reset">취소</button>
+			<button style='margin-left:70px' type="button" id="back">뒤로가기</button>
 		</div>
 	</form>
 
-	<h1>댓글 목록</h1>
-	<div>
-		<input id="ercontent" placeholder="댓글입력" size=80>
-		<button id="insert">등록</button>
-	</div>
+	<h1 id="replylist">댓글 목록</h1>
 	<table id="tbl"></table>
 	<script id="temp" type="text/x-handlebars-template">
 		{{#each .}}
@@ -53,6 +81,10 @@
 	<button id="next">다음</button>
 </div>
 <script>
+	$("#back").on("click", function() {
+		location.href = "/event/list?page=1&num=6&searchType=&keyword=";
+	});
+
 	var ecode = "${ecode}";
 	var page = 1;
 	getReplyList();

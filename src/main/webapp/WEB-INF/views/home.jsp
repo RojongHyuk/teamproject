@@ -4,13 +4,8 @@
 <head>
 <title>Home</title>
 </head>
-<style>
-#ssd{
-width:1000;
-height:300;
-}
-</style>
+
 <body>
-	<img id="ssd" src="/upload/project/banner.jpg" />
+	<img src="/upload/project/banner.jpg" width=1600 height=550 />
 </body>
 </html>

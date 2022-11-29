@@ -7,6 +7,11 @@
 <head>
 <meta charset="UTF-8">
 <!-- 브라우저 탭의 작은 아이콘 설정 -->
+<style>
+body{
+background:#eee;
+}
+</style>
 </head>
 <body>
 	<div id="header">

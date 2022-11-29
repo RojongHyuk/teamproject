@@ -52,5 +52,11 @@ public class EreplyDAOImpl implements EreplyDAO{
 		session.delete(namespace+".adminDelete",ercode);
 		
 	}
+
+	@Override
+	public void allDelete(int ecode) {
+		session.delete(namespace+".allDelete",ecode);
+		
+	}
 	
 }

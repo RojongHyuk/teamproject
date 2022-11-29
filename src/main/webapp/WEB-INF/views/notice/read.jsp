@@ -8,29 +8,43 @@
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
+<style>
+body {
+	background: #eee;
+}
+
+textarea{
+resize: none;
+}
+
+#button1{
+margin-top:30px;
+}
+</style>
 <body>
-	<h1>공지사항</h1>
+	<h2 style="text-align: center">공지사항</h2>
 
 	<form style="text-align: center" name="frm" method="POST"
 		action="/api/notice/update">
 		<div>
-			<input name="ntitle" value="${vo.ntitle}" id="ntitle" size=80
+			제목 ㅡ <input name="ntitle" value="${vo.ntitle}" id="ntitle" size=80
 				placeholder="제목을 입력해주세요.">
 		</div>
+		
 		<div style="margin-top: 15px">
-			<input style="height: 300px" size=80 value="${vo.ncontent}"
-				name="ncontent" id="ncontent" placeholder="내용을 입력해주세요.">
+			<textarea  cols=100 rows=10 name="ncontent" id="ncontent"
+				placeholder="내용을 입력해주세요.">"${vo.ncontent}"</textarea>
 		</div>
 		<input type="hidden" name=nwriter value="${vo.nwriter}" /> <input
 			type="hidden" name=ncode value="${vo.ncode}" />
-		<div>
+		<div id="button1">
 			<button type="button" id="btnSave">수정하기</button>
-			<button type="button" id="list">뒤로가기</button>
+			<button style='margin-left:70px' type="button" id="back">뒤로가기</button>
 		</div>
 	</form>
 </body>
 <script>
-	$("#list").on("click", function() {
+	$("#back").on("click", function() {
 		location.href = "/notice/list?page=1&num=6&searchType=&keyword=";
 	});
 
@@ -51,5 +65,6 @@
 		frm.submit();
 		alert("수정이 완료되었습니다.")
 	});
-s</script>
+	s
+</script>
 </html>

@@ -11,5 +11,5 @@ public interface EreplyDAO {
 	public void delete(String ercode);
 	public void adminDelete(String ercode);
 	public int getTotal(int ecode);
-	
+	public void allDelete(int ecode);
 }

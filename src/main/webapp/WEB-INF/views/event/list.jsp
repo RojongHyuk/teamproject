@@ -14,22 +14,94 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 </head>
 <style>
+body {
+	background: #eee;
+}
+
 #list {
+	margin-top: 15px;
+	margin-left: 500px;
+	overflow: hidden;
+	width:700px;
+}
+
+#left {
+	float: left;
+}
+
+#right {
+	float: right;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 0px auto;
 	margin-top: 30px;
+}
+
+td {
+	padding: 10px 10px;
+}
+
+table .title {
+	color: white;
+}
+
+table .row:hover {
+	color: green;
+	cursor: pointer;
+}
+
+button {
+	margin-left: 15px;
+	margin-top: 70px;
+	margin-bottom: 30px;
+	padding: 10px 10px;
+	background: green;
+	color: white;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+button:disabled {
+	background: gray;
+}
+
+a{
+    text-decoration:none;
+	cursor: pointer;
+	color:black;
+	margin-left:60px;
+
+}
+
+a:hover{
+    text-decoration:none;
+	cursor: pointer;
+	color:red;
+}
+
+#right #btnDelete{
+margin-right:20px;
 }
 </style>
 <body>
 	<h1>이벤트 목록</h1>
-	<button type='button' id='btnDelete'>삭제</button>
-	<a href="/event/insert"><button type='button'>등록</button></a>
 	<div id="list">
-		<a href="/pboard/list?page=1&num=6&searchType=&keyword="><button
-				type='button'>상품목록</button></a> <a
-			href="/notice/list?page=1&num=6&searchType=&keyword=">
-			<button type='button'>공지사항 목록</button>
-		</a> <a href="/">
-			<button type='button'>홈페이지</button>
-		</a>
+		<div id="right">
+			<a href="/event/insert"><button type='button'>등록</button></a>
+			<button style='margin-left:60px' type='button' id='btnDelete'>삭제</button>
+		</div>
+		<div id="left">
+			<a href="/">
+				홈페이지
+			</a> <a href="/pboard/list?page=1&num=6&searchType=&keyword=">
+				상품 목록
+			</a> <a href="/notice/list?page=1&num=6&searchType=&keyword=">
+			공지사항 목록
+			</a>
+		</div>
 	</div>
 
 	<table id="tbl" border=1>
@@ -45,10 +117,10 @@
 
 		<tbody>
 			<c:forEach items="${list}" var="vo">
-				<tr class=row>
-					<td><input type="checkbox" name="chk" class="chk"
+				<tr onclick="location.href='/event/read/${vo.ecode}'" class=row>
+					<td  onclick="event.cancelBubble=true" ><input type="checkbox" name="chk" class="chk"
 						ecode="${vo.ecode}" width=50 /></td>
-					<td><a href="/event/read/${vo.ecode}">${vo.etitle}</a></td>
+					<td>${vo.etitle}</td>
 					<td>${vo.econtent}</td>
 					<td>${vo.ewriter}</td>
 					<td>${vo.regDate}</td>
@@ -57,8 +129,8 @@
 			</c:forEach>
 		</tbody>
 	</table>
-	
-	<div>
+
+	<div id="list">
 		<form name="frm">
 			<button id="prev" <c:out value="${page==1?'disabled':''}"/>>이전</button>
 			<input type="text" value="${page}" size=2 name="page"> <span>${page}/${last}</span>

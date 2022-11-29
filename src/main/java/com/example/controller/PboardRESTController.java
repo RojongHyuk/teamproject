@@ -102,6 +102,7 @@ public class PboardRESTController {
 
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public void insert(@Valid PboardVO insertVO, MultipartHttpServletRequest multi) throws Exception {
+		System.out.println(multi.getFile("file"));
 		if (multi.getFile("file") != null) {
 
 			String path = "c:/upload/project/";
@@ -118,9 +119,9 @@ public class PboardRESTController {
 
 			if (!newFile.exists())
 				file.transferTo(newFile);
+			insertVO.setPimage("/upload/project/" + file.getOriginalFilename());
 			UUID code = UUID.randomUUID();
 			insertVO.setPcode(code.toString());
-			insertVO.setPimage("/upload/project/" + file.getOriginalFilename());
 		}
 		pdao.insert(insertVO);
 	};

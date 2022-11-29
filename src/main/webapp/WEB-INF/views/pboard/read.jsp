@@ -8,11 +8,15 @@
 	
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
+<style>
+body {
+	background: #eee;
+}
+</style>
 <body>	
 	<h1>상품 내용</h1>
-	<h3>${vo.ptitle}</h3>
-	<h3>${vo.regDate}</h3>
-	<p>${vo.pcontent}</p>
+	<h3>제목 ㅡ ${vo.ptitle}</h3>
+	<p>내용 ㅡ ${vo.pcontent}</p>
 	<hr>
 	<button id="list">목록으로</button>
 </body>

@@ -16,6 +16,10 @@
 	src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <style>
+header{
+background:#eee;
+}
+
 header ul, header ul li {
 	margin: 0;
 	padding: 0;
@@ -48,11 +52,23 @@ header ul li input {
 header .btn-fill {
 	cursor: pointer;
 }
+
+a{
+    text-decoration:none;
+	cursor: pointer;
+	color:black;
+}
+
+a:hover{
+    text-decoration:none;
+	cursor: pointer;
+	color:red;
+}
 </style>
 <header
 	style="border-bottom: 1px solid #ccc; padding: 15px 0; text-align: left">
 	<div class="category" style="margin-left: 100px;">
-		<p style="font-size: 15px">관리자만 접속할 수 있습니다.</p>
+		<p style="font-size: 15px"></p>
 	</div>
 
 	<div
